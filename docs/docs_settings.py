@@ -6,19 +6,6 @@ import all the Studio code.
 
 
 import os
-
-from lms.envs.devstack import *  # lint-amnesty, pylint: disable=wildcard-import
-from cms.envs.devstack import (  # lint-amnesty, pylint: disable=unused-import
-    ADVANCED_PROBLEM_TYPES,
-    COURSE_IMPORT_EXPORT_STORAGE,
-    GIT_EXPORT_DEFAULT_IDENT,
-    LIBRARY_AUTHORING_MICROFRONTEND_URL,
-    SCRAPE_YOUTUBE_THUMBNAILS_JOB_QUEUE,
-    VIDEO_TRANSCRIPT_MIGRATIONS_JOB_QUEUE,
-    UPDATE_SEARCH_INDEX_JOB_QUEUE,
-)
-
-
 # Turn on all the boolean feature flags, so that conditionally included
 # API endpoints will be found.
 for key, value in FEATURES.items():

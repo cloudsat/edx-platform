@@ -1,0 +1,79 @@
+<%page expression_filter="h"/>
+<%inherit file="main.html" />
+<%namespace name='static' file='static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+
+from openedx.core.djangolib.markup import HTML, Text
+%>
+
+ <main id="main" aria-label="Content" tabindex="-1">
+<div class="hidden-xs filler"></div>
+    <section class="home">
+<div class="cover" style="position: relative;background: url(https://i.imgur.com/G0P0yAJ.jpg);background-size: cover;background-position-y: 19em; background-position-x: 9em;padding-bottom:2em;">
+        <div class="track-container container-cover" style="padding-top:3%;">
+<div class="">
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb" style="background-color: transparent !important; margin-bottom: 0;">
+    <li class="breadcrumb-item"><a href="../../">Home</a></li>
+    <li class="breadcrumb-item"><a href="../all">Tracks</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Azure Data Services</li>
+  </ol>
+</nav>
+</div>
+                <h1 class="header-title" style="text-align:center;">Azure Data Services</h1>
+
+        <div class="header-description mx-5">
+            <p style="font-size:1.2em; text-align:center; line-height: 1.5em;">In this Course you will learn about the main concepts related to advanced analytics and Big Data processing and how Azure Data Services can be used to implement a modern data warehouse architecture. You will learn what Azure services you can leverage to establish a solid data platform to quickly ingest, process and visualise data from a large variety of data sources. Along with the real-life scenarios and data source, this course is designed to progressively implement an extended modern data platform architecture starting from a traditional relational data pipeline. You’ll explore big data scenarios with large data files and distributed computing. Then we introduce big data scenarios with large data files and distributed computing. We add non-structured data and AI into the mix and finish off with real-time stream analytics. You will have done all of that by the end of the workshop. While the course is designed on self-paced learning model, the ideal time to learn and practice all the labs is nearly 16 hours. What you’ll learn Modern Data warehousing and processing concepts. Hands on training on Azure data platform technologies and services including Storage explorer, SQL server, Databricks, Data Factory, Synapse Analytics and more. Visualising the processed data using Power BI.</p>
+        </div>
+        </div>
+</div>
+<div class="track-banner h-auto">
+    <div style="background:#00a3ff;" class="banner p-5 h-100">
+	<div class="track-container banner-container h-100">
+	    <div class="col-12 p-2">
+	        <h1 class="text-white text-uppercase">Azure Data Services for Modern Data Warehouse Architecture</h1>
+	    </div>
+	    <div class="row text-center p-2">
+	        <div class="banner-info col-4 hidden">
+		    <div class="number"><h3>11</h3></div>
+		    <div class="description"><h3>Required Courses</h3></div>
+		</div>
+		<div class="banner-info col-4 hidden">
+               	    <div class="number"><h3>12 - 48</h3></div>
+                    <div class="description"><h3>Hours Per Course</h3></div> 
+		</div>
+		<div class="banner-info col-12">
+                    <div class="number"><h3>5</h3></div>
+                    <div class="description"><h3>Skills to Learn</h3></div>
+		</div> 
+	    </div>
+	</div>
+    </div>
+</div>
+
+
+<div style="padding: 40px 0;" class="courses-list-container">
+	<%include file="courses_list10.html" />
+</div>
+    </section>
+</main>
+
+<%block name="js_extra">
+   <script type="text/javascript">
+      $(window).load(function() {
+         if(getParameterByName('next')) {
+              $('#login').trigger("click");
+         }
+      })
+   </script>
+</%block>
+
+% if show_signup_immediately is not UNDEFINED:
+  ## NOTE: This won't work in production, because anonymous views are cached, so it will
+  ## show either with or without this extra js for 3 minutes at a time.
+<script type="text/javascript">
+  $(window).load(function() {$('#signup_action').trigger("click");});
+</script>
+% endif

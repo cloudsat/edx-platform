@@ -1,0 +1,55 @@
+<%page expression_filter="h"/>
+<%inherit file="main.html" />
+<%namespace name='static' file='static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+
+from openedx.core.djangolib.markup import HTML, Text
+%>
+
+<main id="main" aria-label="Content" tabindex="-1">
+    <div class="filler" style="background-image: url(https://i.imgur.com/1Svyuyi.png); position: fixed; height: 100%; width: 100%; background-size: contain; background-repeat: no-repeat; top: 16em; opacity: 0.3;"></div>
+    <section class="home">
+<div class="cover" style="position: relative;background: url(https://i.imgur.com/G0P0yAJ.jpg);background-size: cover;background-position-y: 19em; background-position-x: 9em;padding-bottom:2em;">
+	<div class="track-container container-cover" style="padding-top:3%;">
+<div class="">
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb" style="background-color: transparent;!important; margin-bottom: 0;">
+    <li class="breadcrumb-item"><a href="../../">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Tracks</li>
+  </ol>
+</nav>
+</div>
+
+		<h1 class="header-title">Gear up and begin the journey that is your future</h1>
+	
+	<div class="header-description text-center">	
+	<p>Looking for the opportunity to upskill but don't know where to start? These Future-Ready Technology Program tracks will teach you real world skills through self-paced, modular on-demand courses which includes hands-on labs through virtual environments and practical demos leading to a final capstone project.</p>
+
+<p>Select what track interests you from these readily available tracks and begin your journey today.</p>
+	</div>
+	</div>
+</div>		
+	<%include file="track_list.html" />	
+    </section>
+</main>
+
+
+<%block name="js_extra">
+   <script type="text/javascript">
+      $(window).load(function() {
+         if(getParameterByName('next')) {
+              $('#login').trigger("click");
+         }
+      })
+   </script>
+</%block>
+
+% if show_signup_immediately is not UNDEFINED:
+  ## NOTE: This won't work in production, because anonymous views are cached, so it will
+  ## show either with or without this extra js for 3 minutes at a time.
+<script type="text/javascript">
+  $(window).load(function() {$('#signup_action').trigger("click");});
+</script>
+% endif

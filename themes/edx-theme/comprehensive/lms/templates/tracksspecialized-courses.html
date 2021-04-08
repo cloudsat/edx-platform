@@ -1,0 +1,55 @@
+<%page expression_filter="h"/>
+<%inherit file="main.html" />
+<%namespace name='static' file='static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+
+from openedx.core.djangolib.markup import HTML, Text
+%>
+
+ <main id="main" aria-label="Content" tabindex="-1">
+<div class="hidden-xs filler"></div>
+    <section class="home">
+<div class="cover" style="position: relative;background: url(https://i.imgur.com/G0P0yAJ.jpg);background-size: cover;background-position-y: 19em; background-position-x: 9em;padding-bottom:2em; position:relative;">
+        <div class="track-container container-cover" style="padding-top:3%;">
+<div class="">
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb" style="background-color: transparent;!important; margin-bottom: 0;">
+    <li class="breadcrumb-item"><a href="../../">Home</a></li>
+    <li class="breadcrumb-item"><a href="../all">Tracks</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Specialized Courses</li>
+  </ol>
+</nav>
+</div>
+                <h1 class="header-title" style="text-align:center;">Specialized Courses</h1>
+        <div class="header-description">
+        <p style="font-size:1.2em; text-align:center;">Besides the Future-Ready Skills Tracks, We offer a wide range of courses that allows you to upskill and retrain.</p>
+
+        <p style="font-size:1.2em; text-align:center;">Select from these readily available courses and begin your journey in tech.</p>
+        </div>
+        </div>
+</div>
+<div class="courses-list-container">
+      <%include file="specializedcourses_list.html" />
+</div>
+    </section>
+</main>
+
+<%block name="js_extra">
+   <script type="text/javascript">
+      $(window).load(function() {
+         if(getParameterByName('next')) {
+              $('#login').trigger("click");
+         }
+      })
+   </script>
+</%block>
+
+% if show_signup_immediately is not UNDEFINED:
+  ## NOTE: This won't work in production, because anonymous views are cached, so it will
+  ## show either with or without this extra js for 3 minutes at a time.
+<script type="text/javascript">
+  $(window).load(function() {$('#signup_action').trigger("click");});
+</script>
+% endif

@@ -1,0 +1,159 @@
+## mako
+<%def name="online_help_token()"><% return "courseinfo" %></%def>
+<%page args="active_page=None" expression_filter="h" />
+<%namespace name='static' file='/static_content.html'/>
+
+<%!
+from courseware.tabs import get_course_tab_list
+from django.conf import settings
+from django.urls import reverse
+from django.utils.translation import ugettext as _
+%>
+
+<%
+if active_page is None and active_page_context is not UNDEFINED:
+    # If active_page is not passed in as an argument, it may be in the context as active_page_context
+    active_page = active_page_context
+
+if course is not None:
+    include_special_exams = (
+    request.user.is_authenticated and
+    settings.FEATURES.get('ENABLE_SPECIAL_EXAMS', False) and
+    (course.enable_proctored_exams or course.enable_timed_exams)
+    )
+%>
+
+
+    % if not request.user.is_active:
+        <script>
+           alert("Please activate your account first.")
+                window.location.replace('/dashboard')
+        </script>
+    % endif
+
+
+<script type="text/javascript">
+$( document ).ready(function() {   
+    var username = "";
+    var email = "";
+    var course_code = "";
+    var canProvision = false;
+    var isEnrolled = false;
+    fetch("https://" + window.location.href.split("/")[2] + "/user_api/v1/account/getusermailcourse",{
+        method: 'get'
+    })
+    .then(r =>  r.json().then(data => ({status: r.status, body: data})))
+    .then(response => {
+        username = response.body['username'];
+        email = response.body['user_email'];
+        course_code = response.body['course_code'];
+	isEnrolled = response.body['is_enrolled'];
+	console.log(response.body['is_enrolled']);
+	
+	if (isEnrolled === false){
+	    window.location.replace('../about')
+	}
+
+        fetch("https://requestprovision.azurewebsites.net/api/CheckAvailProvision?code=cl/Ij4vve5FM6tZ73QkPoyNQFVr1EoLMU4mSyagiwj61EMjTnRAk/A==&coursecode=" + course_code + "&email=" + email,{
+            method: 'get'
+        })
+        .then(r =>  r.json().then(data => ({status: r.status, body: data})))
+        .then(response => {	
+            canProvision = response.body;
+
+            $('#provisionBtnLoading').addClass("d-none");
+            if(canProvision){
+                $('#provisionBtn').removeClass("disabled");
+                $('#provisionBtn').text("Request Lab");
+
+            }
+            else{
+                $('#provisionBtnDiv').addClass("d-none");
+                $('#provisionBtnDiv').removeClass("page-header-secondary");
+            }
+        })
+    })
+
+    $("#provisionBtn").click(function(event){
+	if(canProvision){
+        answer = confirm("Ready to request CloudSwyft Hands-On Labs for this course?\n\nAll Hands-On Labs are time based.\nClicking the OK button means you are ready to proceed with your hands-on labs for this course. Once the OK button is clicked, the CloudSwyft Team will provision your hands-on lab. Please allow 1-2 business days, excluding weekends, for this to take effect. You will receive an email once your lab has been provisioned and ready to use.\n\nNote: If your hands-on lab has not yet been provisioned after 2 business days, please reach out to the CloudSwyft Support Team via the Live Chat button below.")
+        if(answer){
+             fetch("https://requestprovision.azurewebsites.net/api/SendRequestProvision?code=OmFvtMISfG4vYw6DJizewMKOENSKLb44/FyayFLIMgyEqxk6VE3LrA==&username=${request.user}&name=${request.user.profile.name}&email=" + email + "&course_code=" + course_code + "&course_name=${course.display_name_with_default}&org=${course.display_org_with_default}",{
+        method: 'get'
+        })
+        .then(r =>  r.json().then(data => ({status: r.status, body: data})))
+        .then(response => {
+            alert ("Request Lab Email Sent");
+            $('#provisionBtn').addClass("hidden");
+            $('#provisionBtnDiv').removeClass("page-header-secondary");
+        })
+        }
+	}
+    });
+});
+</script>
+
+
+
+% if include_special_exams is not UNDEFINED and include_special_exams:
+    <%static:js group='proctoring'/>
+    % for template_name in ["proctored-exam-status"]:
+        <script type="text/template" id="${template_name}-tpl">
+            <%static:include path="courseware/${template_name}.underscore" />
+        </script>
+    % endfor
+    <div class="proctored_exam_status"></div>
+% endif
+
+% if disable_tabs is UNDEFINED or not disable_tabs:
+    <%
+    tab_list = get_course_tab_list(request, course)
+    %>
+    % if uses_bootstrap:
+        <nav class="navbar course-tabs pb-0 navbar-expand" aria-label="${_('Course')}">
+            <ul class="navbar-nav mr-auto">
+                % for tab in tab_list:
+                    <%
+                    tab_is_active = tab.tab_id in (active_page, default_tab)
+                    %>
+                    <li class="nav-item ${'active' if tab_is_active else ''}">
+                        <a href="${tab.link_func(course, reverse)}" class="nav-link">
+                            ${_(tab.name)}
+                            % if tab_is_active:
+                                <span class="sr-only">, ${_('current location')}</span>
+                            %endif
+                            % if tab_image:
+                                ## Translators: 'needs attention' is an alternative string for the
+                                ## notification image that indicates the tab "needs attention".
+                                <img src="${tab_image}" alt="${_('needs attention')}" />
+                            %endif
+                        </a>
+                    </li>
+                % endfor
+            </ul>
+
+	    <!--<div>
+                <a class="btn btn-primary action-resume-course" href="https://csacademy.cloudswyft.com/courses/course-v1:QA+QA104x+2020_T1/jump_to/block-v1:QA+QA104x+2020_T1+type@course+block@course">
+		    <span data-action-type="start">Start Course</span>
+                </a>               
+	    </div>-->
+
+	  <div id="provisionBtnDiv" style="margin: 10px; padding: 10px 15px; border-radius: 2px;" class="btn-info">
+              <a id="provisionBtn" href="#" style="color:white;" class="last-accessed-link disabled">${_("Checking Lab Status")}</a>
+              <img id="provisionBtnLoading" src="https://labs-staging.cloudswyft.com/Content/Image/loading2.gif" style="height: 30px;">
+          </div>
+        </nav>
+    % else:
+        <nav class="${active_page} wrapper-course-material" aria-label="${_('Course Material')}">
+            <div class="course-material">
+                <%
+                tabs_tmpl = static.get_template_path('/courseware/tabs.html')
+                %>
+                <ol class="tabs course-tabs">
+                    <%include file="${tabs_tmpl}" args="tab_list=tab_list,active_page=active_page,default_tab=default_tab,tab_image=tab_image" />
+                    <%block name="extratabs" />
+                </ol>
+            </div>
+        </nav>
+    % endif
+%endif
